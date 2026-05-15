@@ -1,0 +1,12 @@
+target/
+build/
+*.log
+*.err.log
+*.trace.db
+
+.vscode/
+.idea/
+*.iml
+
+.DS_Store
+Thumbs.db

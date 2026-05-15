@@ -5,6 +5,12 @@
 		}
 	],
 	"settings": {
-		"java.compile.nullAnalysis.mode": "disabled"
+		"java.compile.nullAnalysis.mode": "disabled",
+		"files.watcherExclude": {
+			"**/target/**": true
+		},
+		"search.exclude": {
+			"**/target": true
+		}
 	}
 }

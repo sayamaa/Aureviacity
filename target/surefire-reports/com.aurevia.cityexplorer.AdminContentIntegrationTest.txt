@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.aurevia.cityexplorer.AdminContentIntegrationTest
 -------------------------------------------------------------------------------
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 45.28 s -- in com.aurevia.cityexplorer.AdminContentIntegrationTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 17.84 s -- in com.aurevia.cityexplorer.AdminContentIntegrationTest

@@ -776,7 +776,7 @@ main {
     scroll-behavior: smooth;
     scroll-snap-type: x proximity;
     -webkit-overflow-scrolling: touch;
-    touch-action: pan-x;
+    touch-action: pan-x pan-y pinch-zoom;
     padding: 6px 4px 18px;
     cursor: grab;
     scrollbar-width: none;

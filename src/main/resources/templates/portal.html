@@ -262,8 +262,39 @@ input.mob-toggle { display: none; }
 @media (max-width: 768px) {
   .hero-slider { height: 85vh; }
   .slide-search { max-width: 100%; }
+  .slider-dots-hero {
+    bottom: 18px;
+    gap: 7px;
+    padding: 7px 10px;
+    max-width: calc(100vw - 32px);
+    background: rgba(9,20,60,0.34);
+  }
+  .slider-dot-hero {
+    width: 8px;
+    height: 8px;
+    min-width: 8px;
+  }
+  .slider-dot-hero.active {
+    width: 24px;
+    border-radius: 999px;
+  }
   .slider-arrow.prev { left: 12px; }
   .slider-arrow.next { right: 12px; }
+}
+@media (max-width: 420px) {
+  .slider-dots-hero {
+    bottom: 14px;
+    gap: 6px;
+    padding: 6px 9px;
+  }
+  .slider-dot-hero {
+    width: 7px;
+    height: 7px;
+    min-width: 7px;
+  }
+  .slider-dot-hero.active {
+    width: 20px;
+  }
 }
 
 /* ============================================================
@@ -841,27 +872,94 @@ footer { background:var(--navy); color:rgba(255,255,255,.65); padding:3rem 2rem 
   .nav-user { max-width: 104px; padding: 0 0.58rem; }
 }
 @media (max-width:760px) {
-  .nav-inner { display:grid; grid-template-columns:auto 1fr auto auto; align-items:center; }
+  .nav-inner {
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr) auto auto;
+    align-items:center;
+    gap:.55rem;
+  }
   .nav-admin-link { display:none; }
   .nav-logo { grid-column:1; }
-  .nav-user { grid-column:2; justify-self:end; max-width:min(34vw,150px); }
+  .nav-logo a { gap:.42rem !important; }
+  .nav-user { display:none; }
   #theme-toggle { grid-column:3; justify-self:end; }
   .hamburger-label { grid-column:4; justify-self:end; }
-  .nav-city-wrap { grid-column:1 / -1; width:100%; }
-  .nav-city-select { width:100%; }
-  .nav-search-wrap { grid-column:1 / -1; width:100%; }
+  .nav-city-wrap { display:none; }
+  .nav-search-wrap {
+    grid-column:2;
+    grid-row:1;
+    width:100%;
+    min-width:0;
+    max-width:none;
+    margin:0;
+  }
+  #nav-search {
+    min-height:40px;
+    padding:.55rem 2.85rem .55rem 2.25rem;
+    font-size:.84rem;
+  }
+  .nav-search-icon { left:.82rem; }
+  .nav-search-btn {
+    width:30px;
+    height:30px;
+    right:5px;
+  }
   .nav-inner > form { display:none; }
   .mobile-nav {
-    margin:0 .75rem .75rem;
+    position:fixed;
+    top:68px;
+    right:0;
+    bottom:0;
+    width:min(82vw, 330px);
+    max-height:none;
+    overflow-y:auto;
+    margin:0;
+    padding:.85rem;
     border:1px solid var(--border);
-    border-radius:18px;
+    border-right:0;
+    border-radius:18px 0 0 18px;
     background:var(--nav-bg);
+    backdrop-filter:blur(18px);
+    box-shadow:-18px 0 42px rgba(31,37,107,.18);
+    transform:translateX(110%);
+    transition:transform .32s var(--ease);
+    z-index:950;
+  }
+  .mob-toggle:checked + #navbar .mobile-nav { transform:translateX(0); max-height:none; }
+  .mobile-nav a {
+    padding:.85rem 1rem !important;
+    font-weight:700;
+  }
+  .mobile-nav-user {
+    display:flex;
+    align-items:center;
+    gap:.55rem;
+    min-height:42px;
+    padding:.85rem 1rem;
+    border-radius:12px;
+    color:var(--navy);
+    background:rgba(41,182,200,.08);
+    font-family:var(--font-display);
+    font-size:.9rem;
+    font-weight:800;
+  }
+  [data-theme="dark"] .mobile-nav-user { color:var(--cyan-lt); background:rgba(41,182,200,.1); }
+  .mobile-nav-admin {
+    display:flex;
+    align-items:center;
+    gap:.55rem;
+    color:var(--navy) !important;
+    background:rgba(31,37,107,.08) !important;
+    font-family:var(--font-display);
+    font-weight:800 !important;
+  }
+  [data-theme="dark"] .mobile-nav-admin {
+    color:var(--cyan-lt) !important;
+    background:rgba(41,182,200,.12) !important;
   }
 }
 @media (max-width:600px) {
-  .nav-inner { height:auto; padding:.75rem 1.2rem; }
-  .nav-search-wrap { order:4; flex:1 0 100%; min-width:0; max-width:none; }
-  .nav-user { order:2; max-width: calc(100vw - 190px); }
+  .nav-inner { height:auto; padding:.7rem .85rem; }
   .mobile-nav a { padding:.78rem 1rem !important; font-size:.92rem; }
   .hero-inner { padding:3rem 1.2rem; }
   .categories-section,
@@ -871,9 +969,16 @@ footer { background:var(--navy); color:rgba(255,255,255,.65); padding:3rem 2rem 
   .footer-top { grid-template-columns:1fr; }
   .footer-bottom { flex-direction:column; align-items:flex-start; }
   .cards-grid { grid-template-columns:1fr; }
-  .nav-city-select { min-width:120px; font-size:.8rem; }
+  .nav-logo { font-size:1.02rem; }
+  #theme-toggle { width:34px; height:34px; }
+  .hamburger-label { width:32px; height:32px; align-items:center; justify-content:center; padding:0; }
 }
 @media (max-width:420px) {
+  .nav-inner { grid-template-columns:auto minmax(88px,1fr) auto auto; gap:.42rem; }
+  .nav-logo i { font-size:1.2rem; }
+  .nav-logo a { font-size:.95rem; }
+  #nav-search { padding-left:2rem; padding-right:2.45rem; font-size:.78rem; }
+  .nav-search-btn { width:28px; height:28px; }
   footer { padding:2.4rem 1.2rem 1.2rem; }
   .footer-brand p { max-width:none; }
   .footer-socials { flex-wrap:wrap; }
@@ -958,6 +1063,8 @@ footer { background:var(--navy); color:rgba(255,255,255,.65); padding:3rem 2rem 
   </div>
 
   <div class="mobile-nav">
+    <span class="mobile-nav-user" th:text="'Hi, ' + ${currentUser.fullName}">Hi, User</span>
+    <a class="mobile-nav-admin" th:if="${isAdmin}" th:href="@{/admin}"><i class="fa-solid fa-shield-halved"></i> Admin</a>
     <a href="#home">Home</a>
     <a href="#how-it-works">Services</a>
     <a href="#cities">Explore</a>
@@ -965,7 +1072,6 @@ footer { background:var(--navy); color:rgba(255,255,255,.65); padding:3rem 2rem 
     <a class="hotel-link" th:href="@{/planner/hotels}">Hotels</a>
     <a href="#footer">Contact</a>
     <a href="#complaint">Reviews</a>
-    <a th:if="${isAdmin}" th:href="@{/admin}" style="padding:0.85rem 2rem;font-weight:500;">Admin</a>
     <form th:action="@{/logout}" method="post" style="padding:0.85rem 2rem;">
       <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
       <button type="submit" style="width:100%;padding:0.8rem 1rem;border:none;border-radius:999px;background:linear-gradient(135deg,var(--navy),var(--cyan));color:#fff;font-weight:700;">Logout</button>

@@ -183,25 +183,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     track.addEventListener('pointerdown', (event) => {
       if (event.pointerType === 'mouse' && event.button !== 0) return;
-      isDragging = true;
+      isDragging = false;
       didDrag = false;
       startX = event.clientX;
       startY = event.clientY;
       startScrollLeft = track.scrollLeft;
-      track.classList.add('dragging');
-      track.setPointerCapture?.(event.pointerId);
     });
 
     track.addEventListener('pointermove', (event) => {
-      if (!isDragging) return;
       const deltaX = Math.abs(event.clientX - startX);
       const deltaY = Math.abs(event.clientY - startY);
-      if (deltaX > 18 && deltaX > deltaY) didDrag = true;
+      if (!isDragging) {
+        if (deltaY > 12 && deltaY >= deltaX) return;
+        if (deltaX <= 18 || deltaX <= deltaY) return;
+        isDragging = true;
+        didDrag = true;
+        track.classList.add('dragging');
+        track.setPointerCapture?.(event.pointerId);
+      }
       track.scrollLeft = startScrollLeft - (event.clientX - startX);
     });
 
     const stopDragging = (event) => {
-      if (!isDragging) return;
+      if (!isDragging) {
+        suppressClick = false;
+        return;
+      }
       isDragging = false;
       suppressClick = didDrag;
       track.classList.remove('dragging');

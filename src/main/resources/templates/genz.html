@@ -434,6 +434,7 @@
     <nav>
         <a th:href="@{'/cities/' + ${city.slug}}">Classic Mode</a>
         <a th:href="@{/planner/flights}">Flights</a>
+        <a th:if="${currentUser.admin}" th:href="@{/admin}">Admin</a>
     </nav>
     <div class="topbar-right">
         <div id="theme-toggle" title="Toggle dark mode">

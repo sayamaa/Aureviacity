@@ -28,6 +28,38 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ── 3. DARK MODE TOGGLE ── */
+  document.querySelectorAll('.topbar').forEach(topbar => {
+    const nav = topbar.querySelector(':scope > nav');
+    if (!nav || topbar.querySelector('.topbar-menu-toggle')) return;
+
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'topbar-menu-toggle';
+    toggle.setAttribute('aria-label', 'Menu');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.innerHTML = '<i class="fa-solid fa-bars"></i>';
+    topbar.insertBefore(toggle, nav);
+
+    const closeMenu = () => {
+      topbar.classList.remove('menu-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.innerHTML = '<i class="fa-solid fa-bars"></i>';
+    };
+
+    toggle.addEventListener('click', () => {
+      const isOpen = topbar.classList.toggle('menu-open');
+      toggle.setAttribute('aria-expanded', String(isOpen));
+      toggle.innerHTML = isOpen
+        ? '<i class="fa-solid fa-xmark"></i>'
+        : '<i class="fa-solid fa-bars"></i>';
+    });
+
+    nav.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 900) closeMenu();
+    });
+  });
+
   const themeToggle = document.getElementById('theme-toggle');
   if (themeToggle) {
     const icon = themeToggle.querySelector('i');

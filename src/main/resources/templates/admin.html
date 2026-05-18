@@ -15,6 +15,7 @@
             padding: 20px 24px 24px;
             display: grid;
             gap: 22px;
+            min-width: 0;
         }
 
         .admin-hero-shell {
@@ -22,6 +23,8 @@
             overflow: hidden;
             border-radius: 26px;
             padding: 24px 26px;
+            min-width: 0;
+            max-width: 100%;
             color: #f8fbff;
             background:
                 radial-gradient(circle at top right, rgba(61, 214, 228, 0.34), transparent 30%),
@@ -130,6 +133,8 @@
             grid-template-columns: 300px 1fr;
             gap: 24px;
             align-items: start;
+            min-width: 0;
+            max-width: 100%;
         }
 
         .admin-sidebar-card,
@@ -139,6 +144,8 @@
             border-radius: 28px;
             box-shadow: 0 26px 60px rgba(15, 23, 42, 0.1);
             backdrop-filter: blur(12px);
+            min-width: 0;
+            max-width: 100%;
         }
 
         .admin-sidebar-card {
@@ -190,6 +197,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            min-width: 0;
             padding: 14px 16px;
             border-radius: 18px;
             background: #f7fbff;
@@ -213,6 +221,7 @@
 
         .admin-stack {
             display: grid;
+            min-width: 0;
         }
 
         .admin-form-grid {
@@ -560,6 +569,7 @@
     <nav>
         <a th:href="@{/portal}">Portal</a>
         <a th:href="@{/planner/hotels}">Hotel Planner</a>
+        <a th:href="@{/admin}">Admin</a>
     </nav>
     <div class="topbar-right">
         <div id="theme-toggle" title="Toggle dark mode">

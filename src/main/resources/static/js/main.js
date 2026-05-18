@@ -6,7 +6,11 @@ function loadGenZMode(cityName) {
   const source = cityName?.closest ? cityName : null;
   const card = source?.closest('.city-card');
   const raw = source?.dataset?.slug || card?.dataset?.slug || cityName || 'chandigarh';
-  const slug = String(raw).toLowerCase().trim().replace(/[^a-z0-9]+/g, '');
+  const slug = String(raw)
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
   if (!slug) return;
   window.location.href = `/cities/${encodeURIComponent(slug)}/genz`;
 }

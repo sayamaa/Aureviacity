@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: myapp
+    name: city-explorer
     runtime: java
     buildCommand: "mvn clean package"
     startCommand: "java -jar build/city-explorer-0.0.1-SNAPSHOT-exec.jar"

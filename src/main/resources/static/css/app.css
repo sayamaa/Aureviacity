@@ -1023,7 +1023,8 @@ main {
     justify-content: center;
     gap: 10px;
     flex: 1;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    min-width: 0;
 }
 
 .slider-dot {
@@ -1039,6 +1040,48 @@ main {
 .slider-dot.active {
     width: 34px;
     background: linear-gradient(135deg, #0f62fe, #19c2b0);
+}
+
+@media (max-width: 620px) {
+    .slider-controls {
+        gap: 10px;
+    }
+
+    .slider-dots {
+        flex: 0 1 auto;
+        gap: 7px;
+        padding: 7px 10px;
+        border-radius: 999px;
+        background: rgba(9, 20, 60, 0.08);
+        overflow: hidden;
+    }
+
+    .slider-dot {
+        width: 8px;
+        height: 8px;
+        min-width: 8px;
+    }
+
+    .slider-dot.active {
+        width: 24px;
+    }
+}
+
+@media (max-width: 420px) {
+    .slider-dots {
+        gap: 6px;
+        padding: 6px 9px;
+    }
+
+    .slider-dot {
+        width: 7px;
+        height: 7px;
+        min-width: 7px;
+    }
+
+    .slider-dot.active {
+        width: 20px;
+    }
 }
 
 .dual-grid {
@@ -1518,6 +1561,26 @@ main {
 }
 
 @media (max-width: 900px) {
+    .hero-banner,
+    .city-hero,
+    .genz-hero,
+    .city-card,
+    .category-card,
+    .place-card,
+    .review-card,
+    .feature-slide,
+    .feature-slide-media,
+    .category-card-media,
+    .detail-card-media,
+    img {
+        touch-action: pan-y pinch-zoom;
+    }
+
+    .category-strip-track,
+    .category-strip-track * {
+        touch-action: pan-x pan-y pinch-zoom;
+    }
+
     .dual-grid {
         grid-template-columns: 1fr;
     }

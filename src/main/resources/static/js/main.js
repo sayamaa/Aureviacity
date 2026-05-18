@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* 6. SWIPE / DRAG SCROLL ROWS */
-  document.querySelectorAll('.swipe-scroll, .genz-grid.genz-rendered').forEach((track) => {
+  document.querySelectorAll('.swipe-scroll, .category-strip-track, .genz-grid.genz-rendered').forEach((track) => {
     let isDragging = false;
     let didDrag = false;
     let suppressClick = false;

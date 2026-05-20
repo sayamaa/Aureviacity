@@ -1,5 +1,6 @@
 package com.aurevia.cityexplorer.controller;
 
+import java.time.LocalDateTime;
 import java.security.Principal;
 
 import jakarta.validation.Valid;
@@ -14,8 +15,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.aurevia.cityexplorer.model.ContactForm;
+import com.aurevia.cityexplorer.model.ContactMessage;
 import com.aurevia.cityexplorer.model.Review;
 import com.aurevia.cityexplorer.model.ReviewForm;
+import com.aurevia.cityexplorer.repository.ContactMessageRepository;
 import com.aurevia.cityexplorer.service.PortalService;
 import com.aurevia.cityexplorer.service.UserService;
 
@@ -24,10 +28,14 @@ public class PortalController {
 
     private final PortalService portalService;
     private final UserService userService;
+    private final ContactMessageRepository contactMessageRepository;
 
-    public PortalController(PortalService portalService, UserService userService) {
+    public PortalController(PortalService portalService,
+                            UserService userService,
+                            ContactMessageRepository contactMessageRepository) {
         this.portalService = portalService;
         this.userService = userService;
+        this.contactMessageRepository = contactMessageRepository;
     }
 
     @GetMapping("/portal")
@@ -48,7 +56,40 @@ public class PortalController {
     @GetMapping("/contact-us")
     public String contactUs(Model model, Principal principal) {
         addFooterPageContext(model, principal);
+        if (!model.containsAttribute("contactForm")) {
+            var currentUser = userService.findByEmail(principal.getName()).orElseThrow();
+            ContactForm contactForm = new ContactForm();
+            contactForm.setFullName(currentUser.getFullName());
+            contactForm.setEmail(currentUser.getEmail());
+            model.addAttribute("contactForm", contactForm);
+        }
         return "contact-us";
+    }
+
+    @PostMapping("/contact-us")
+    public String submitContact(@Valid @ModelAttribute("contactForm") ContactForm contactForm,
+                                BindingResult bindingResult,
+                                Principal principal,
+                                RedirectAttributes redirectAttributes,
+                                Model model) {
+        var currentUser = userService.findByEmail(principal.getName()).orElseThrow();
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("currentUser", currentUser);
+            return "contact-us";
+        }
+
+        ContactMessage contactMessage = new ContactMessage();
+        contactMessage.setFullName(contactForm.getFullName().trim());
+        contactMessage.setEmail(contactForm.getEmail().trim());
+        contactMessage.setCity(trimToNull(contactForm.getCity()));
+        contactMessage.setSubject(contactForm.getSubject().trim());
+        contactMessage.setMessage(contactForm.getMessage().trim());
+        contactMessage.setCreatedAt(LocalDateTime.now());
+        contactMessage.setUser(currentUser);
+        contactMessageRepository.save(contactMessage);
+
+        redirectAttributes.addFlashAttribute("contactSuccess", "Thanks, your message was received. We will review it soon.");
+        return "redirect:/contact-us";
     }
 
     @GetMapping("/privacy-policy")
@@ -182,5 +223,13 @@ public class PortalController {
 
     private void addFooterPageContext(Model model, Principal principal) {
         model.addAttribute("currentUser", userService.findByEmail(principal.getName()).orElseThrow());
+    }
+
+    private String trimToNull(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 }

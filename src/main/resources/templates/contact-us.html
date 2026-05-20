@@ -26,6 +26,25 @@
         .contact-item { display: flex; gap: 14px; align-items: flex-start; padding: 16px; border-radius: 14px; background: rgba(15,98,254,.06); border: 1px solid var(--border); }
         .contact-item strong { display: block; margin-bottom: 3px; }
         .info-btn { display: inline-flex; align-items: center; gap: 10px; margin-top: 18px; padding: 12px 18px; border-radius: 999px; background: var(--primary); color: #fff; font-weight: 800; }
+        .contact-form { display: grid; gap: 14px; margin-top: 18px; }
+        .contact-form label { font-weight: 800; color: var(--text); }
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 13px 15px;
+            background: var(--bg);
+            color: var(--text);
+            font: inherit;
+            outline: none;
+        }
+        .contact-form input:focus,
+        .contact-form textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(15,98,254,.12); }
+        .contact-form textarea { min-height: 150px; resize: vertical; }
+        .contact-form button { border: 0; cursor: pointer; justify-content: center; }
+        .field-error { color: #c62828; font-size: .86rem; font-weight: 700; }
+        .message.success { margin-top: 18px; padding: 14px 16px; border-radius: 14px; background: rgba(25,194,176,.14); color: var(--text); border: 1px solid rgba(25,194,176,.35); font-weight: 800; }
         .info-footer { padding: 24px 7vw 40px; color: var(--muted); text-align: center; }
         @media (max-width: 820px) { .contact-grid { grid-template-columns: 1fr; } .info-hero { padding-top: 76px; } }
     </style>
@@ -80,14 +99,34 @@
             </article>
 
             <article class="info-card">
-                <i class="fa-solid fa-circle-info"></i>
-                <h2>What to include</h2>
-                <ul>
-                    <li>Your city or destination name.</li>
-                    <li>The page, category, or listing you are asking about.</li>
-                    <li>A short description of the update, issue, or request.</li>
-                    <li>Any useful contact details for follow-up.</li>
-                </ul>
+                <i class="fa-solid fa-paper-plane"></i>
+                <h2>Send a message</h2>
+                <p>Share the page, city, listing, or travel detail you want us to check.</p>
+                <div class="message success" th:if="${contactSuccess}" th:text="${contactSuccess}"></div>
+                <form class="contact-form" th:action="@{/contact-us}" th:object="${contactForm}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                    <label for="fullName">Name</label>
+                    <input id="fullName" type="text" th:field="*{fullName}" placeholder="Your name">
+                    <small class="field-error" th:errors="*{fullName}"></small>
+
+                    <label for="email">Email</label>
+                    <input id="email" type="email" th:field="*{email}" placeholder="you@example.com">
+                    <small class="field-error" th:errors="*{email}"></small>
+
+                    <label for="city">City or page</label>
+                    <input id="city" type="text" th:field="*{city}" placeholder="Example: Udaipur, Leh Art Quarter">
+
+                    <label for="subject">Subject</label>
+                    <input id="subject" type="text" th:field="*{subject}" placeholder="What should we help with?">
+                    <small class="field-error" th:errors="*{subject}"></small>
+
+                    <label for="message">Message</label>
+                    <textarea id="message" th:field="*{message}" placeholder="Write the update, issue, or request here."></textarea>
+                    <small class="field-error" th:errors="*{message}"></small>
+
+                    <button class="info-btn" type="submit"><i class="fa-solid fa-paper-plane"></i> Submit Message</button>
+                </form>
                 <p>For urgent real-world emergencies, contact local emergency services directly. Aurevia is an informational travel portal.</p>
             </article>
         </div>

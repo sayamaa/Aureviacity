@@ -1,5 +1,7 @@
 package com.aurevia.cityexplorer.service;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -23,6 +25,9 @@ import com.aurevia.cityexplorer.model.Review;
 import com.aurevia.cityexplorer.repository.ManagedCityRepository;
 import com.aurevia.cityexplorer.repository.ManagedPlaceRepository;
 import com.aurevia.cityexplorer.repository.ReviewRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class PortalService {
@@ -420,6 +425,11 @@ public class PortalService {
     }
 
     private Map<String, CityPage> buildCities() {
+        Map<String, CityPage> editableData = loadEditableCityData();
+        if (!editableData.isEmpty()) {
+            return editableData;
+        }
+
         Map<String, CityPage> data = new LinkedHashMap<>();
 
         data.put("jaipur", curatedCity(
@@ -1268,7 +1278,7 @@ List.of(
     place("Nada Sahib Gurudwara", "Popular spiritual and riverside destination.", "https://haryanatourism.gov.in/wp-content/uploads/2024/07/nada_pic1-1.jpg"),
     place("Pinjore Gardens", "Historic Mughal-style garden near Chandigarh.", "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/03/d4/a2/2a/pinjore-yadavindra-gardens.jpg?w=900&h=500&s=1"),
     place("Thunder Zone", "Fun amusement and water park.", "https://hblimg.mmtcdn.com/content/hubble/img/ttd_images/mmt/activities/m_Mohali_Thunder_zone_amusement_park_1_l_425_601.jpg"),
-    place("Funcity", "Family-friendly rides and water attractions.", "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=900&q=80"),
+    place("Funcity", "Family-friendly rides and water attractions.", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYXAHp2UJ-8PPjzdEJ0z6mlZl-a2jhKb5VTg&s"),
     place("VR Punjab Mall", "Large nearby mall with shopping and cinema.", "https://images.unsplash.com/photo-1519567241046-7f570eee3ce6?w=900&q=80"),
     place("Cactus Garden", "Unique garden filled with rare cactus species.", "https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=900&q=80"),
     place("ChhatBir Zoo", "Popular wildlife and safari attraction.", "https://images.unsplash.com/photo-1501706362039-c6e13b4b2b5d?w=900&q=80")
@@ -2032,6 +2042,73 @@ List.of(
                 List.of("Good for quieter Himachal travel", "Pairs well with Khajjiar and Dalhousie", "A slower alternative to crowded hill stations")));
 
         return data;
+    }
+
+    private Map<String, CityPage> loadEditableCityData() {
+        InputStream input = Thread.currentThread()
+                .getContextClassLoader()
+                .getResourceAsStream("data/cities.json");
+        if (input == null) {
+            return Map.of();
+        }
+
+        try (input) {
+            ObjectMapper mapper = new ObjectMapper()
+                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            CityDataFile file = mapper.readValue(input, new TypeReference<>() {});
+            if (file.cities() == null || file.cities().isEmpty()) {
+                return Map.of();
+            }
+
+            Map<String, CityPage> loaded = new LinkedHashMap<>();
+            for (EditableCity city : file.cities()) {
+                if (city.slug() == null || city.slug().isBlank()) {
+                    continue;
+                }
+                loaded.put(city.slug(), toCityPage(city));
+            }
+            return loaded;
+        } catch (IOException ex) {
+            throw new IllegalStateException("Unable to load editable city data from src/main/resources/data/cities.json", ex);
+        }
+    }
+
+    private CityPage toCityPage(EditableCity city) {
+        List<QuickFact> facts = city.facts() == null
+                ? List.of()
+                : city.facts().stream()
+                .map(fact -> new QuickFact(fact.value(), fact.label()))
+                .toList();
+
+        List<CategoryPage> categories = city.categories() == null
+                ? List.of()
+                : city.categories().stream()
+                .map(category -> new CategoryPage(
+                        category.slug(),
+                        category.name(),
+                        category.summary(),
+                        category.heroImage(),
+                        toPlaceCards(category)))
+                .toList();
+
+        return new CityPage(
+                city.slug(),
+                city.name(),
+                city.tagline(),
+                city.heroImage(),
+                city.region(),
+                facts,
+                categories,
+                city.highlights() == null ? List.of() : city.highlights());
+    }
+
+    private List<PlaceCard> toPlaceCards(EditableCategory category) {
+        if (category.places() == null) {
+            return List.of();
+        }
+        return category.places().stream()
+                .map(place -> place(place.name(), place.description(), place.imageUrl()))
+                .toList();
     }
 
     private Map<String, String> buildAliases() {
@@ -5015,6 +5092,38 @@ case "chamba" -> Optional.of(genZCustomCity(city,
     private String normalize(String value) {
         return value == null ? "" : value.toLowerCase(Locale.ENGLISH).trim().replaceAll("[^a-z0-9]+", "");
     }
+
+    private record CityDataFile(List<EditableCity> cities) {}
+
+    private record EditableCity(
+            String slug,
+            String name,
+            String tagline,
+            String heroImage,
+            String region,
+            List<EditableFact> facts,
+            List<String> highlights,
+            List<EditableCategory> categories) {}
+
+    private record EditableFact(String value, String label) {}
+
+    private record EditableCategory(
+            String slug,
+            String name,
+            String summary,
+            String heroImage,
+            List<EditablePlace> places) {}
+
+    private record EditablePlace(
+            String name,
+            String description,
+            String category,
+            String imageUrl,
+            EditableCoordinates coordinates,
+            double rating,
+            List<String> tags) {}
+
+    private record EditableCoordinates(double latitude, double longitude) {}
 
     public record CityCard(String slug, String name, String tagline, String image) {}
 

@@ -1,5 +1,7 @@
 package com.aurevia.cityexplorer.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -14,6 +16,8 @@ import jakarta.mail.internet.MimeMessage;
 @Service
 public class ContactEmailService {
 
+    private static final Logger log = LoggerFactory.getLogger(ContactEmailService.class);
+
     private final JavaMailSender mailSender;
     private final String recipientEmail;
     private final String senderEmail;
@@ -27,6 +31,9 @@ public class ContactEmailService {
     }
 
     public void sendContactMessage(ContactMessage contactMessage) {
+        if (senderEmail == null || senderEmail.isBlank()) {
+            throw new IllegalStateException("MAIL_USERNAME is not configured");
+        }
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
@@ -37,6 +44,12 @@ public class ContactEmailService {
             helper.setText(buildEmailBody(contactMessage), false);
             mailSender.send(mimeMessage);
         } catch (MessagingException | MailException ex) {
+            log.error("Contact email failed: sender={} recipient={} subject=\"{}\" error={}",
+                    senderEmail,
+                    recipientEmail,
+                    contactMessage.getSubject(),
+                    ex.getMessage(),
+                    ex);
             throw new IllegalStateException("Unable to send contact email", ex);
         }
     }

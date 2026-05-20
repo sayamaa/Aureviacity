@@ -862,8 +862,13 @@ footer { background:var(--navy); color:rgba(255,255,255,.65); padding:3rem 2rem 
   .hamburger-label { display:flex; }
   .mobile-nav  {
     display:flex;
-    padding:.65rem;
+    padding:0;
     gap:.35rem;
+    border-top:0;
+    box-shadow:none;
+  }
+  .mob-toggle:checked + #navbar .mobile-nav {
+    padding:.65rem;
     border-top:1px solid var(--border);
     box-shadow:0 18px 36px rgba(31,37,107,.12);
   }
@@ -926,19 +931,22 @@ footer { background:var(--navy); color:rgba(255,255,255,.65); padding:3rem 2rem 
     max-height:0;
     overflow:hidden;
     margin:0 .75rem;
-    padding:.85rem;
-    border:1px solid var(--border);
+    padding:0;
+    border:0;
     border-radius:18px;
     background:var(--nav-bg);
     backdrop-filter:blur(18px);
-    box-shadow:0 18px 36px rgba(31,37,107,.12);
+    box-shadow:none;
     transform:none;
-    transition:max-height .32s var(--ease), margin-bottom .32s var(--ease);
+    transition:max-height .32s var(--ease), margin-bottom .32s var(--ease), padding .32s var(--ease);
     z-index:1;
   }
   .mob-toggle:checked + #navbar .mobile-nav {
     max-height:560px;
     margin-bottom:.75rem;
+    padding:.85rem;
+    border:1px solid var(--border);
+    box-shadow:0 18px 36px rgba(31,37,107,.12);
   }
   .mobile-nav a {
     display:flex;

@@ -103,6 +103,7 @@
                 <h2>Send a message</h2>
                 <p>Share the page, city, listing, or travel detail you want us to check.</p>
                 <div class="message success" th:if="${contactSuccess}" th:text="${contactSuccess}"></div>
+                <div class="field-error" th:if="${contactError}" th:text="${contactError}"></div>
                 <form class="contact-form" th:action="@{/contact-us}" th:object="${contactForm}" method="post">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 

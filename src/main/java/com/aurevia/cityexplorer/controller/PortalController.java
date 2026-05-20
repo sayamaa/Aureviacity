@@ -20,6 +20,7 @@ import com.aurevia.cityexplorer.model.ContactMessage;
 import com.aurevia.cityexplorer.model.Review;
 import com.aurevia.cityexplorer.model.ReviewForm;
 import com.aurevia.cityexplorer.repository.ContactMessageRepository;
+import com.aurevia.cityexplorer.service.ContactEmailService;
 import com.aurevia.cityexplorer.service.PortalService;
 import com.aurevia.cityexplorer.service.UserService;
 
@@ -29,13 +30,16 @@ public class PortalController {
     private final PortalService portalService;
     private final UserService userService;
     private final ContactMessageRepository contactMessageRepository;
+    private final ContactEmailService contactEmailService;
 
     public PortalController(PortalService portalService,
                             UserService userService,
-                            ContactMessageRepository contactMessageRepository) {
+                            ContactMessageRepository contactMessageRepository,
+                            ContactEmailService contactEmailService) {
         this.portalService = portalService;
         this.userService = userService;
         this.contactMessageRepository = contactMessageRepository;
+        this.contactEmailService = contactEmailService;
     }
 
     @GetMapping("/portal")
@@ -87,6 +91,13 @@ public class PortalController {
         contactMessage.setCreatedAt(LocalDateTime.now());
         contactMessage.setUser(currentUser);
         contactMessageRepository.save(contactMessage);
+        try {
+            contactEmailService.sendContactMessage(contactMessage);
+        } catch (IllegalStateException ex) {
+            model.addAttribute("currentUser", currentUser);
+            model.addAttribute("contactError", "Your message was saved, but the email could not be sent. Please check the mail settings.");
+            return "contact-us";
+        }
 
         redirectAttributes.addFlashAttribute("contactSuccess", "Thanks, your message was received. We will review it soon.");
         return "redirect:/contact-us";
